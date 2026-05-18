@@ -89,7 +89,7 @@ export default function Experience() {
             visible: { transition: { staggerChildren: 0.12 } },
           }}
         >
-          {EXPERIENCE.map((exp) => (
+          {EXPERIENCE.map((exp, i) => (
             <motion.div
               key={exp.role + exp.company}
               className={styles.item}
