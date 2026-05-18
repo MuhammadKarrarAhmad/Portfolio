@@ -79,15 +79,24 @@ export default function Experience() {
           <h2 className="section-title">Work <span>Experience</span></h2>
         </motion.div>
 
-        <div className={styles.timeline}>
-          {EXPERIENCE.map((exp, i) => (
+        <motion.div
+          className={styles.timeline}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          variants={{
+            hidden: {},
+            visible: { transition: { staggerChildren: 0.12 } },
+          }}
+        >
+          {EXPERIENCE.map((exp) => (
             <motion.div
               key={exp.role + exp.company}
               className={styles.item}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.1 }}
+              variants={{
+                hidden: { opacity: 0, x: -20 },
+                visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
+              }}
             >
               <div className={styles.lineCol}>
                 <div className={styles.dot} style={{ background: exp.color }} />
@@ -119,7 +128,7 @@ export default function Experience() {
               </div>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )

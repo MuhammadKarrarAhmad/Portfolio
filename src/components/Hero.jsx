@@ -101,9 +101,12 @@ export default function Hero() {
 
       <motion.div
         className={styles.stats}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.7, delay: 0.6 }}
+        initial="hidden"
+        animate="visible"
+        variants={{
+          hidden: {},
+          visible: { transition: { staggerChildren: 0.12, delayChildren: 0.7 } },
+        }}
       >
         {[
           { value: '400+', label: 'Staff Managed' },
@@ -111,10 +114,17 @@ export default function Hero() {
           { value: '3', label: 'Key Projects' },
           { value: '2nd', label: 'Hackathon Place' },
         ].map((stat) => (
-          <div key={stat.label} className={styles.stat}>
+          <motion.div
+            key={stat.label}
+            className={styles.stat}
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+            }}
+          >
             <span className={styles.statValue}>{stat.value}</span>
             <span className={styles.statLabel}>{stat.label}</span>
-          </div>
+          </motion.div>
         ))}
       </motion.div>
 

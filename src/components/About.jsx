@@ -37,14 +37,30 @@ export default function About() {
               <div className={styles.avatarRing} aria-hidden="true" />
             </div>
 
-            <div className={styles.highlights}>
+            <motion.div
+              className={styles.highlights}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={{
+                hidden: {},
+                visible: { transition: { staggerChildren: 0.1, delayChildren: 0.3 } },
+              }}
+            >
               {HIGHLIGHTS.map((h) => (
-                <div key={h.text} className={styles.highlight}>
+                <motion.div
+                  key={h.text}
+                  className={styles.highlight}
+                  variants={{
+                    hidden: { opacity: 0, x: -16 },
+                    visible: { opacity: 1, x: 0, transition: { duration: 0.4 } },
+                  }}
+                >
                   <span className={styles.highlightIcon}>{h.icon}</span>
                   <span>{h.text}</span>
-                </div>
+                </motion.div>
               ))}
-            </div>
+            </motion.div>
           </motion.div>
 
           <motion.div

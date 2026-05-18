@@ -61,7 +61,12 @@ export default function Contact() {
             transition={{ duration: 0.6, delay: 0.1 }}
           >
             {LINKS.map((link) => (
-              <div key={link.label} className={styles.linkCard}>
+              <motion.div
+                key={link.label}
+                className={styles.linkCard}
+                whileHover={{ x: 6 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+              >
                 <span className={styles.linkIcon} style={{ color: link.color, background: `${link.color}15` }}>
                   {link.icon}
                 </span>
@@ -81,7 +86,7 @@ export default function Contact() {
                     <span className={styles.linkValueStatic}>{link.value}</span>
                   )}
                 </div>
-              </div>
+              </motion.div>
             ))}
           </motion.div>
 

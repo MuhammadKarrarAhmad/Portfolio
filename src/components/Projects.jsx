@@ -63,6 +63,8 @@ const cardVariants = {
   }),
 }
 
+const hoverTransition = { type: 'spring', stiffness: 300, damping: 22 }
+
 export default function Projects() {
   return (
     <section id="projects" style={{ background: 'var(--bg-secondary)' }}>
@@ -88,6 +90,9 @@ export default function Projects() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
+              whileHover={{ y: -8, boxShadow: `0 20px 40px ${project.color}22` }}
+              whileTap={{ scale: 0.98 }}
+              transition={hoverTransition}
               style={{ '--card-accent': project.color }}
             >
               <div className={styles.cardTop}>
