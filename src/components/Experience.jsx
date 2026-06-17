@@ -1,134 +1,251 @@
-import { motion } from 'framer-motion'
-import styles from './Experience.module.css'
+import { useState, useRef } from 'react'
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
+import { Reveal } from './Reveal'
+import { ease } from '../utils/animations'
 
-const EXPERIENCE = [
+const PEEK    = 56    // px each compressed card peeks above the card in front
+const CARD_H  = 300   // fixed card height in px — must match --exp-card-h in CSS
+const N_CARDS = 3
+// Total height of the card stack area: tallest card + peek strips for the rest
+const STACK_H = CARD_H + PEEK * (N_CARDS - 1)   // 300 + 112 = 412px
+const SECTION_H = '400vh'
+
+// Progress ranges for each card entering  [start, end]
+// 0 = section top at viewport top | 1 = section bottom at viewport bottom
+const ENTER_RANGES = [
+  [0.04, 0.17],
+  [0.33, 0.47],
+  [0.60, 0.75],
+]
+
+const ETHOS_TABS = [
   {
-    role: 'Data Engineering Intern',
-    company: 'Ethos Farm',
-    period: 'Sep 2024 – Present',
-    type: 'Internship',
-    color: '#22d3ee',
-    bullets: [
-      'Designed & delivered a digital data management system, reducing manual data entry by ~60% across operational teams',
-      'Engineered automated ETL pipelines using Python, Pandas & SQL across 3 operational functions',
-      'Built a real-time shift management system for 400+ airport terminal staff with three-tier role architecture',
-      'Led data collection, pipeline design & stakeholder reporting for a live Heathrow Airport feasibility study',
-      'Collaborated with stakeholders to translate business requirements into scalable, production-ready solutions',
-    ],
+    id: 'workforge',
+    label: 'WorkForge',
+    role: 'Multi-Tenant SaaS Platform',
+    desc: 'Built a comprehensive workforce management platform for a major UK shopping centre. Multi-tenant architecture supporting 400+ staff, real-time scheduling, shift management, and automated reporting dashboards.',
+    stack: ['React', 'FastAPI', 'PostgreSQL', 'Redis', 'Docker'],
   },
   {
-    role: 'Project Lead',
-    company: 'Fujitsu Sustainability Hackathon – Heathrow',
-    period: 'Jan 2025',
-    type: 'Hackathon',
-    color: '#3b82f6',
-    bullets: [
-      'Led a cross-functional team of 5 to design a data-driven waste management solution for Heathrow Airport',
-      'Secured 2nd place in the competition',
-      'Presented findings to industry judges using data visualisation and structured analysis',
-    ],
+    id: 'mall-ai',
+    label: 'Mall AI Assistant',
+    role: 'RAG-Powered Chat',
+    desc: 'Developed an intelligent visitor assistant using RAG architecture and vector embeddings. Handles store queries, navigation, event info, and personalised recommendations at scale.',
+    stack: ['Python', 'LangChain', 'Pinecone', 'FastAPI', 'React'],
   },
   {
-    role: 'Pathways Work Experience',
-    company: 'Cisco – Remote',
-    period: 'Feb 2025',
-    type: 'Work Experience',
-    color: '#a78bfa',
-    bullets: [
-      'Completed Cisco\'s Virtual Work Experience Programme',
-      'Gained practical skills in networking, cybersecurity fundamentals and collaborative problem-solving',
-    ],
-  },
-  {
-    role: 'Crew Member',
-    company: 'McDonald\'s – Hayes',
-    period: 'Nov 2024 – Present',
-    type: 'Part-Time',
-    color: '#f59e0b',
-    bullets: [
-      'Analysed shift-based operational data to identify service bottlenecks, improving peak-hour order speed by 15%',
-      'Awarded Employee of the Month and Star of the Shift on 10 separate occasions',
-    ],
-  },
-  {
-    role: 'Founder & Operator',
-    company: 'E-Commerce Business – Pakistan',
-    period: '2023 – Present',
-    type: 'Entrepreneurial',
-    color: '#10b981',
-    bullets: [
-      'Founded and operate an e-commerce business selling fashion, perfumes, jewellery and handbags',
-      'Applied data-driven strategies to automate inventory reconciliation & digital marketing optimisation',
-      'Built a scalable business model with a roadmap for international expansion and worldwide shipping',
-    ],
+    id: 'heathrow',
+    label: 'Heathrow Pass Tracker',
+    role: 'Airside Access Management',
+    desc: 'Engineered a pass management system for Heathrow Airport. Tracks pass expiry, automates renewal workflows, and provides compliance reporting for security-sensitive access control.',
+    stack: ['Python', 'FastAPI', 'PostgreSQL', 'Celery', 'React'],
   },
 ]
 
-export default function Experience() {
+const EXPERIENCE = [
+  {
+    id: 'ethos',
+    num: '01',
+    role: 'Data Engineering Intern',
+    company: 'Ethos Farm',
+    period: 'Jun 2025 – Present',
+    type: 'Internship · Part-time',
+    location: 'London, UK',
+    colorHex: '#2563EB',
+    bullets: [
+      'Building 3 production systems for real enterprise clients',
+      'Reduced manual workforce admin by 60% via automation',
+      'Managing data pipelines processing 400+ employee records',
+    ],
+    hasTabs: true,
+  },
+  {
+    id: 'ecom',
+    num: '02',
+    role: 'E-Commerce Founder',
+    company: 'Independent Business',
+    period: 'Jan 2024 – Present',
+    type: 'Self-employed',
+    location: 'Remote',
+    colorHex: '#7C3AED',
+    bullets: [
+      'Founded and operated a product-based online business',
+      'Managed product sourcing, marketing, and fulfilment end-to-end',
+      'Built custom tooling to automate order tracking and inventory',
+    ],
+    hasTabs: false,
+  },
+  {
+    id: 'hackathon',
+    num: '03',
+    role: '2nd Place — Sustainability Hackathon',
+    company: 'Fujitsu',
+    period: 'Mar 2025',
+    type: 'Competition',
+    location: 'London, UK',
+    colorHex: '#059669',
+    bullets: [
+      'Led a cross-functional team to design a sustainability platform',
+      'Pitched to Fujitsu judges against university-level competitors',
+      'Delivered a functional prototype in under 24 hours',
+    ],
+    hasTabs: false,
+  },
+]
+
+function EthosTabs() {
+  const [activeTab, setActiveTab] = useState('workforge')
+  const tab = ETHOS_TABS.find(t => t.id === activeTab)
+
   return (
-    <section id="experience">
-      <div className="section-container">
+    <div className="ethos-tabs">
+      <div className="tab-list">
+        {ETHOS_TABS.map(t => (
+          <button
+            key={t.id}
+            className={`tab-btn${activeTab === t.id ? ' active' : ''}`}
+            onClick={() => setActiveTab(t.id)}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+      <AnimatePresence mode="wait">
         <motion.div
-          className="section-header"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          key={activeTab}
+          className="tab-panel"
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -6 }}
+          transition={{ duration: 0.2, ease }}
         >
-          <span className="section-label">Career</span>
-          <h2 className="section-title">Work <span>Experience</span></h2>
+          <p className="tab-role">{tab.role}</p>
+          <p className="tab-desc">{tab.desc}</p>
+          <div className="tag-list">
+            {tab.stack.map(s => <span key={s} className="tag">{s}</span>)}
+          </div>
         </motion.div>
+      </AnimatePresence>
+    </div>
+  )
+}
 
-        <motion.div
-          className={styles.timeline}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true }}
-          variants={{
-            hidden: {},
-            visible: { transition: { staggerChildren: 0.12 } },
-          }}
-        >
-          {EXPERIENCE.map((exp, i) => (
-            <motion.div
-              key={exp.role + exp.company}
-              className={styles.item}
-              variants={{
-                hidden: { opacity: 0, x: -20 },
-                visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
-              }}
-            >
-              <div className={styles.lineCol}>
-                <div className={styles.dot} style={{ background: exp.color }} />
-                {i < EXPERIENCE.length - 1 && <div className={styles.line} />}
-              </div>
+function CardContent({ exp }) {
+  return (
+    <div className="exp-stack-card">
+      {/* Ping dot */}
+      <div className="exp-ping-wrap">
+        <span className="exp-ping-dot" style={{ background: exp.colorHex }} />
+        <span className="exp-ping-ring" style={{ borderColor: exp.colorHex }} />
+        <span className="exp-ping-ring exp-ping-ring--2" style={{ borderColor: exp.colorHex }} />
+      </div>
 
-              <div className={styles.content}>
-                <div className={styles.header}>
-                  <div>
-                    <h3 className={styles.role}>{exp.role}</h3>
-                    <p className={styles.company}>{exp.company}</p>
-                  </div>
-                  <div className={styles.meta}>
-                    <span className={styles.period}>{exp.period}</span>
-                    <span className={styles.typeBadge} style={{ color: exp.color, borderColor: `${exp.color}40`, background: `${exp.color}10` }}>
-                      {exp.type}
-                    </span>
-                  </div>
-                </div>
+      {/* Ghost number */}
+      <span className="exp-num" style={{ color: exp.colorHex }}>{exp.num}</span>
 
-                <ul className={styles.bullets}>
-                  {exp.bullets.map((b) => (
-                    <li key={b}>
-                      <span className={styles.bulletDot} style={{ background: exp.color }} />
-                      {b}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </motion.div>
+      <div className="exp-stack-body">
+        <div className="exp-stack-header">
+          <div>
+            <h3 className="exp-role">{exp.role}</h3>
+            <div className="exp-meta">
+              <span className="exp-company">{exp.company}</span>
+              <span className="exp-period">{exp.period}</span>
+              <span className="tag" style={{ fontSize: '0.72rem' }}>{exp.type}</span>
+            </div>
+          </div>
+          <span
+            className="exp-location-tag"
+            style={{
+              background: `${exp.colorHex}15`,
+              color: exp.colorHex,
+              border: `1px solid ${exp.colorHex}30`,
+            }}
+          >
+            {exp.location}
+          </span>
+        </div>
+
+        <ul className="exp-bullets">
+          {exp.bullets.map(b => (
+            <li key={b}>
+              <span className="exp-bullet-mark" style={{ background: exp.colorHex }} />
+              {b}
+            </li>
           ))}
-        </motion.div>
+        </ul>
+
+        {exp.hasTabs && <EthosTabs />}
+      </div>
+    </div>
+  )
+}
+
+function StackCard({ exp, index, progress }) {
+  const [enterStart, enterEnd] = ENTER_RANGES[index]
+
+  // Start at STACK_H px below the top of the card's natural position so it's
+  // fully hidden below the clipping container, then settle to 0.
+  const y = useTransform(progress, [enterStart, enterEnd], [`${STACK_H}px`, '0px'])
+
+  return (
+    <motion.div
+      className="exp-abs-card"
+      style={{
+        top: index * PEEK,   // final resting position in the peek stack
+        zIndex: index + 1,
+        y,
+      }}
+    >
+      <CardContent exp={exp} />
+    </motion.div>
+  )
+}
+
+export default function Experience() {
+  const sectionRef = useRef(null)
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end end'],
+  })
+
+  return (
+    <section
+      ref={sectionRef}
+      id="experience"
+      style={{ height: SECTION_H, position: 'relative' }}
+    >
+      <div className="exp-sticky-pin">
+        {/* Heading — sticks here the entire time */}
+        <div className="container">
+          <div className="exp-pin-head">
+            <Reveal>
+              <span className="section-label">Experience</span>
+              <h2 className="section-title">
+                Where I&apos;ve <span className="gradient-text">Worked</span>
+              </h2>
+            </Reveal>
+            <Reveal delay={0.1}>
+              <p className="section-sub">
+                Real internships, real clients, real products shipped to production.
+              </p>
+            </Reveal>
+          </div>
+        </div>
+
+        {/* Card stack — fills remaining space */}
+        <div className="exp-cards-outer">
+          <div className="exp-cards-area">
+            {EXPERIENCE.map((exp, i) => (
+              <StackCard
+                key={exp.id}
+                exp={exp}
+                index={i}
+                progress={scrollYProgress}
+              />
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   )

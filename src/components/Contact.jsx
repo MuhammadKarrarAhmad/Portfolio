@@ -1,138 +1,128 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Mail, MapPin, ExternalLink } from 'lucide-react'
+import { Send, Mail } from 'lucide-react'
 import { FaGithub, FaLinkedin } from 'react-icons/fa'
-import styles from './Contact.module.css'
+import { Reveal } from './Reveal'
+import { ease } from '../utils/animations'
 
-const LINKS = [
-  {
-    icon: <Mail size={22} />,
-    label: 'Email',
-    value: 'muhammadkarrar.ahmad@icloud.com',
-    href: 'mailto:muhammadkarrar.ahmad@icloud.com',
-    color: '#22d3ee',
-  },
-  {
-    icon: <FaGithub size={22} />,
-    label: 'GitHub',
-    value: 'MuhammadKarrarAhmad',
-    href: 'https://github.com/MuhammadKarrarAhmad',
-    color: '#f0f4ff',
-  },
-  {
-    icon: <FaLinkedin size={22} />,
-    label: 'LinkedIn',
-    value: 'Muhammad Karrar Ahmad',
-    href: 'https://www.linkedin.com/in/muhammadkarrarahmad',
-    color: '#3b82f6',
-  },
-  {
-    icon: <MapPin size={22} />,
-    label: 'Location',
-    value: 'Southall, London, UK',
-    href: null,
-    color: '#a78bfa',
-  },
+const SOCIALS = [
+  { icon: <Mail size={18} />, label: 'Email', href: 'mailto:professersheikh84@gmail.com' },
+  { icon: <FaLinkedin size={18} />, label: 'LinkedIn', href: 'https://linkedin.com/in/muhammadkarrarahmad' },
+  { icon: <FaGithub size={18} />, label: 'GitHub', href: 'https://github.com/MuhammadKarrarAhmad' },
 ]
 
 export default function Contact() {
+  const [form, setForm] = useState({ name: '', email: '', message: '' })
+  const [sent, setSent] = useState(false)
+
+  const handleSubmit = e => {
+    e.preventDefault()
+    const { name, email, message } = form
+    const subject = encodeURIComponent(`Portfolio inquiry from ${name}`)
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)
+    window.location.href = `mailto:professersheikh84@gmail.com?subject=${subject}&body=${body}`
+    setSent(true)
+    setTimeout(() => setSent(false), 4000)
+  }
+
   return (
-    <section id="contact" style={{ background: 'var(--bg-secondary)' }}>
-      <div className="section-container">
-        <motion.div
-          className="section-header"
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <span className="section-label">Let&apos;s Connect</span>
-          <h2 className="section-title">Get In <span>Touch</span></h2>
-          <p className={styles.subtitle}>
-            Open to junior data engineering or software engineering roles. Feel free to reach out!
+    <section id="contact" className="section">
+      <div className="container">
+        <Reveal style={{ textAlign: 'center', marginBottom: '64px' }}>
+          <span className="section-label">Contact</span>
+          <h2 className="section-title">Let&apos;s <span className="gradient-text">Connect</span></h2>
+          <p className="section-sub">
+            Open to internships, freelance projects, and collaboration. I reply within 24 hours.
           </p>
-        </motion.div>
+        </Reveal>
 
-        <div className={styles.grid}>
-          <motion.div
-            className={styles.linksCol}
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.1 }}
-          >
-            {LINKS.map((link) => (
-              <motion.div
-                key={link.label}
-                className={styles.linkCard}
-                whileHover={{ x: 6 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-              >
-                <span className={styles.linkIcon} style={{ color: link.color, background: `${link.color}15` }}>
-                  {link.icon}
-                </span>
-                <div>
-                  <p className={styles.linkLabel}>{link.label}</p>
-                  {link.href ? (
-                    <a
-                      href={link.href}
-                      target={link.href.startsWith('http') ? '_blank' : undefined}
-                      rel={link.href.startsWith('http') ? 'noreferrer' : undefined}
-                      className={styles.linkValue}
-                    >
-                      {link.value}
-                      {link.href.startsWith('http') && <ExternalLink size={13} />}
-                    </a>
-                  ) : (
-                    <span className={styles.linkValueStatic}>{link.value}</span>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <motion.div
-            className={styles.ctaCol}
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <div className={styles.ctaCard}>
-              <div className={styles.ctaGlow} aria-hidden="true" />
-              <h3 className={styles.ctaTitle}>Looking for a Junior Role</h3>
-              <p className={styles.ctaText}>
-                I&apos;m actively seeking junior data or software engineering opportunities where
-                I can bring immediate impact through my hands-on experience in data pipelines,
-                full-stack development, and stakeholder-facing projects.
-              </p>
-              <div className={styles.ctaBadges}>
-                <span className="tag">Open to Work</span>
-                <span className="tag">London / Remote</span>
-                <span className="tag">Junior Data Eng</span>
-                <span className="tag">Junior Dev</span>
+        <div className="contact-grid">
+          {/* Left — info */}
+          <Reveal delay={0.1}>
+            <div className="contact-info">
+              <div className="open-to-work">
+                <span className="badge-dot" />
+                Open to Work
               </div>
-              <div className={styles.ctaActions}>
-                <a
-                  href="mailto:muhammadkarrar.ahmad@icloud.com"
-                  className="btn-primary"
-                >
-                  <Mail size={16} />
-                  Send an Email
-                </a>
-                <a
-                  href="/cv.pdf"
-                  download
-                  className="btn-outline"
-                >
-                  Download CV
-                </a>
+
+              <h3 className="contact-info-heading">
+                Have a project in mind?
+              </h3>
+              <p className="contact-info-body">
+                Whether you need a data pipeline, a full-stack web app, or just want to talk
+                tech — I&apos;m always happy to chat. Based in London, available remotely.
+              </p>
+
+              <div className="contact-socials">
+                {SOCIALS.map(s => (
+                  <a
+                    key={s.label}
+                    href={s.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="social-btn"
+                    aria-label={s.label}
+                  >
+                    {s.icon}
+                    <span>{s.label}</span>
+                  </a>
+                ))}
               </div>
             </div>
-          </motion.div>
-        </div>
+          </Reveal>
 
-        <div className={styles.footer}>
-          <p>Built with React + Vite · &copy; {new Date().getFullYear()} Muhammad Karrar Ahmad</p>
+          {/* Right — form */}
+          <Reveal delay={0.2}>
+            <form className="contact-form" onSubmit={handleSubmit}>
+              <div className="form-row">
+                <div className="form-field">
+                  <label htmlFor="cf-name">Name</label>
+                  <input
+                    id="cf-name"
+                    type="text"
+                    placeholder="Your name"
+                    value={form.name}
+                    onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div className="form-field">
+                  <label htmlFor="cf-email">Email</label>
+                  <input
+                    id="cf-email"
+                    type="email"
+                    placeholder="your@email.com"
+                    value={form.email}
+                    onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="form-field">
+                <label htmlFor="cf-msg">Message</label>
+                <textarea
+                  id="cf-msg"
+                  rows={5}
+                  placeholder="Tell me about your project or opportunity..."
+                  value={form.message}
+                  onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
+                  required
+                />
+              </div>
+              <motion.button
+                type="submit"
+                className="btn btn-primary"
+                style={{ width: '100%', justifyContent: 'center', gap: 8 }}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.2, ease }}
+              >
+                {sent ? 'Opening Mail App...' : (
+                  <><Send size={15} /> Send Message</>
+                )}
+              </motion.button>
+            </form>
+          </Reveal>
         </div>
       </div>
     </section>
