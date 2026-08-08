@@ -2,8 +2,13 @@ import { useEffect, useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useCountUp } from '../hooks/useCountUp'
 import { useInView } from '../hooks/useInView'
+import { usePointerReveal } from '../hooks/usePointerReveal'
 import { ease } from '../utils/animations'
 import profileImg from '../assets/profile.jpeg'
+import heroBaseDesktop from '../assets/hero-bg/hero-base-desktop.webp'
+import heroBaseMobile from '../assets/hero-bg/hero-base-mobile.webp'
+import heroRevealDesktop from '../assets/hero-bg/hero-reveal-desktop.webp'
+import heroRevealMobile from '../assets/hero-bg/hero-reveal-mobile.webp'
 
 const WORDS = ['Muhammad', 'Karrar', 'Ahmad']
 
@@ -48,6 +53,8 @@ export default function Hero() {
   const [phase,     setPhase]     = useState('typing')
   const [statsRef,  statsInView]  = useInView(0.3, true)
   const timerRef = useRef(null)
+  const [cardHidden, setCardHidden] = useState(false)
+  const { ref: heroBgRef, handlers: heroBgHandlers } = usePointerReveal({ radius: 260 })
 
   useEffect(() => {
     const target = ROLES[roleIdx]
@@ -72,12 +79,26 @@ export default function Hero() {
   }, [displayed, phase, roleIdx])
 
   return (
-    <section id="hero" className="hero section">
+    <section
+      id="hero"
+      className="hero section"
+      ref={heroBgRef}
+      {...heroBgHandlers}
+    >
       {/* Background */}
       <div className="hero-mesh" aria-hidden="true">
         <div className="mesh-orb-1" />
         <div className="mesh-orb-2" />
         <div className="mesh-orb-3" />
+      </div>
+      <div className="hero-photo-bg" aria-hidden="true">
+        <img src={heroBaseDesktop} alt="" className="hero-photo-bg-base hero-photo-bg--desktop" />
+        <img src={heroBaseMobile} alt="" className="hero-photo-bg-base hero-photo-bg--mobile" />
+        <div className="hero-photo-bg-reveal">
+          <img src={heroRevealDesktop} alt="" className="hero-photo-bg-reveal-img hero-photo-bg--desktop" />
+          <img src={heroRevealMobile} alt="" className="hero-photo-bg-reveal-img hero-photo-bg--mobile" />
+        </div>
+        <div className="hero-photo-bg-vignette" />
       </div>
       <div className="hero-grid-overlay" aria-hidden="true" />
       {PARTICLES.map(p => (
@@ -159,30 +180,36 @@ export default function Hero() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.6, delay: 0.4, ease }}>
 
-            {/* glow behind card */}
-            <div className="hero-card-glow" aria-hidden="true" />
+            <div
+              className="hero-card-hover-zone"
+              onMouseEnter={() => setCardHidden(true)}
+              onMouseLeave={() => setCardHidden(false)}
+            >
+              {/* glow behind card */}
+              <div className={`hero-card-glow${cardHidden ? ' is-hidden' : ''}`} aria-hidden="true" />
 
-            <div className="hero-profile-card">
-              {/* Status chip */}
-              <div className="hero-profile-badge">
-                <span className="hero-profile-dot" />
-                Interning @ Ethos Farm
-              </div>
+              <div className={`hero-profile-card${cardHidden ? ' is-hidden' : ''}`}>
+                {/* Status chip */}
+                <div className="hero-profile-badge">
+                  <span className="hero-profile-dot" />
+                  Interning @ Ethos Farm
+                </div>
 
-              {/* Photo */}
-              <div className="hero-photo-wrap">
-                <img src={profileImg} alt="Muhammad Karrar Ahmad" className="hero-photo" />
-                <div className="hero-photo-overlay" />
-              </div>
+                {/* Photo */}
+                <div className="hero-photo-wrap">
+                  <img src={profileImg} alt="Muhammad Karrar Ahmad" className="hero-photo" />
+                  <div className="hero-photo-overlay" />
+                </div>
 
-              {/* Bottom info */}
-              <div className="hero-profile-footer">
-                <div className="hero-profile-name">Muhammad Karrar Ahmad</div>
-                <div className="hero-profile-role">Data Engineer · Full-Stack</div>
-                <div className="hero-profile-stack">
-                  {STACK.map(s => (
-                    <span key={s} className="tag">{s}</span>
-                  ))}
+                {/* Bottom info */}
+                <div className="hero-profile-footer">
+                  <div className="hero-profile-name">Muhammad Karrar Ahmad</div>
+                  <div className="hero-profile-role">Data Engineer · Full-Stack</div>
+                  <div className="hero-profile-stack">
+                    {STACK.map(s => (
+                      <span key={s} className="tag">{s}</span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
