@@ -563,9 +563,13 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; line-height
 .hero-stats {
   display: flex; align-items: center; gap: 48px;
   flex-wrap: wrap;
-  padding-top: 52px;
+  padding: 28px 32px;
   margin-top: 16px;
-  border-top: 1px solid var(--border);
+  background: rgba(13, 31, 60, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
 }
 .stat-item { text-align: left; }
 .stat-value {
@@ -2312,6 +2316,7 @@ a.contact-link:hover .contact-link-value { color: var(--accent-glow); }
 
   .hero { padding: 110px 24px 60px; align-items: flex-start; }
   .hero-layout { grid-template-columns: 1fr; gap: 48px; }
+  .hero-scroll { display: none; }
   .hero-right { display: none; }
   .hero-name, .hero-title { font-size: clamp(2.6rem, 11vw, 4.5rem); }
   .hero-stats { gap: 24px; }
@@ -2346,7 +2351,13 @@ a.contact-link:hover .contact-link-value { color: var(--accent-glow); }
 @media (max-width: 480px) {
   .hero-ctas { flex-direction: column; align-items: stretch; }
   .btn, .btn-primary, .btn-outline, .btn-ghost { justify-content: center; }
-  .hero-stats { flex-direction: column; gap: 20px; }
+  .hero-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 16px;
+    padding: 24px 20px;
+    width: 100%;
+  }
   .footer-inner { flex-direction: column; align-items: flex-start; }
   .booking-slots-grid { grid-template-columns: repeat(2, 1fr); }
   .booking-info-card, .booking-picker-card { padding: 24px 20px; }
