@@ -445,7 +445,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; line-height
     linear-gradient(to bottom, rgba(5, 12, 26, 0.4) 0%, transparent 22%, transparent 78%, rgba(5, 12, 26, 0.85) 100%);
 }
 
-@media (prefers-reduced-motion: reduce), (hover: none) {
+@media (prefers-reduced-motion: reduce) {
   .hero-photo-bg-reveal { display: none; }
 }
 
@@ -1099,7 +1099,7 @@ a.contact-link:hover .contact-link-value { color: var(--accent-glow); }
 
 .booking-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 28px;
   max-width: 900px;
   margin: 0 auto;
@@ -1111,6 +1111,7 @@ a.contact-link:hover .contact-link-value { color: var(--accent-glow); }
   flex-direction: column;
   gap: 20px;
   padding: 36px 32px;
+  min-width: 0;
 }
 
 .booking-status-pill {
@@ -1192,6 +1193,7 @@ a.contact-link:hover .contact-link-value { color: var(--accent-glow); }
   flex-direction: column;
   gap: 16px;
   padding: 32px;
+  min-width: 0;
 }
 
 .booking-picker-label {
@@ -2305,6 +2307,7 @@ a.contact-link:hover .contact-link-value { color: var(--accent-glow); }
 @media (max-width: 768px) {
   .section { padding: 80px 0; }
   .navbar-links, .nav-links { display: none; }
+  .navbar-cv-btn { display: none; }
   .hamburger { display: flex; }
 
   .hero { padding: 110px 24px 60px; align-items: flex-start; }
@@ -2329,7 +2332,7 @@ a.contact-link:hover .contact-link-value { color: var(--accent-glow); }
   .exp-stack-header { flex-direction: column; gap: 10px; }
   .exp-pin-head .section-sub { display: none; }
   .exp-cards-outer { padding: 0 12px; }
-  .booking-layout { grid-template-columns: 1fr; gap: 20px; }
+  .booking-layout { grid-template-columns: minmax(0, 1fr); gap: 20px; }
   .booking-slots-grid { grid-template-columns: repeat(4, 1fr); }
   .sp-widget { bottom: 16px; left: 16px; }
   .about-brings-grid, .brings-grid { grid-template-columns: 1fr; }
@@ -2345,4 +2348,6 @@ a.contact-link:hover .contact-link-value { color: var(--accent-glow); }
   .btn, .btn-primary, .btn-outline, .btn-ghost { justify-content: center; }
   .hero-stats { flex-direction: column; gap: 20px; }
   .footer-inner { flex-direction: column; align-items: flex-start; }
+  .booking-slots-grid { grid-template-columns: repeat(2, 1fr); }
+  .booking-info-card, .booking-picker-card { padding: 24px 20px; }
 }

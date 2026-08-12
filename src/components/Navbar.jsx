@@ -60,7 +60,7 @@ export default function Navbar() {
           <a
             href="/cv.pdf"
             download
-            className="btn btn-primary"
+            className="btn btn-primary navbar-cv-btn"
             style={{ fontSize: '0.82rem', padding: '8px 18px' }}
           >
             Download CV
