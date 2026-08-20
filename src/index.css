@@ -334,6 +334,7 @@ h1, h2, h3, h4 { font-family: var(--font-heading); font-weight: 700; line-height
   --reveal-x: -999px;
   --reveal-y: -999px;
   --reveal-radius: 0px;
+  touch-action: pan-y;
 }
 
 .hero-bg {

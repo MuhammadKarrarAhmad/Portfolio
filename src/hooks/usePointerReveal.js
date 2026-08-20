@@ -68,10 +68,14 @@ export function usePointerReveal({ radius = 110, touchRadius = radius * 0.8 } = 
     targetRadius.current = 0
   }, [])
 
-  // Touch has no hover — a tap reveals at that point, then fades on its own.
+  // Touch has no hover — a tap reveals at that point immediately (no ease-in,
+  // so it doesn't read as "nothing happened"), then fades out on its own.
   const onPointerDown = useCallback(e => {
     if (e.pointerType !== 'touch') return
     setPointFromEvent(e)
+    smooth.current.x = raw.current.x
+    smooth.current.y = raw.current.y
+    currentRadius.current = touchRadius
     targetRadius.current = touchRadius
     clearTimeout(tapTimeout.current)
     tapTimeout.current = setTimeout(() => { targetRadius.current = 0 }, TAP_HOLD_MS)
